@@ -1,9 +1,12 @@
 package network
 
 import (
+	"math/rand"
 	"fmt"
 	"net"
 	"strings"
+	"strconv"
+	"time"
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
@@ -48,9 +51,16 @@ func newCreateCommand(dockerCli *command.DockerCli) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create [OPTIONS] NETWORK",
 		Short: "Create a network",
-		Args:  cli.ExactArgs(1),
+		Args:  cli.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options.name = args[0]
+			if (len args > 0) {
+				options.name = args[0]	
+			} else {
+				//Generate a Random number to name network if not given
+				rand.Seed(time.Now().Unix())
+				options.name = (strconv.Itoa(rand.Intn(1000000)) + "_network")	
+			}
+			
 			return runCreate(dockerCli, options)
 		},
 	}
